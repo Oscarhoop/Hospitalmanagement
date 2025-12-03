@@ -371,6 +371,11 @@ Add to `.gitignore`:
 
 `backend/config/mpesa_config.php` is now safe to keep in git because it no longer stores raw credentials, but ensure `.env`/secret files remain private.
 
+### Render / Docker deployment note
+
+- Set `DB_PATH` environment variable to a writable location (defaults to `backend/data/database.sqlite`).
+- Our Dockerfile now runs `php backend/init_db.php` on boot, so the file is created automatically; data resets on each deploy unless you attach a persistent disk or external DB.
+
 ---
 
 ## Support & Resources
