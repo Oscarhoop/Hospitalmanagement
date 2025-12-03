@@ -12,6 +12,15 @@ function get_pdo() {
     $pass = $cfg['pass'];
 
     try {
+        // Ensure SQLite file directories exist when using sqlite DSN
+        if (strpos($dsn, 'sqlite:') === 0) {
+            $dbPath = substr($dsn, strlen('sqlite:'));
+            $dbDir = dirname($dbPath);
+            if (!is_dir($dbDir)) {
+                mkdir($dbDir, 0777, true);
+            }
+        }
+
         // Enable PDO error information
         error_reporting(E_ALL);
         ini_set('display_errors', 1);
