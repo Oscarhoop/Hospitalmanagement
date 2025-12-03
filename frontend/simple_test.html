@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hospital Management System - Security Tests</title>
+</head>
+<body>
+    <h1>Hospital Management System - Security Tests</h1>
+    
+    <div class="test-section">
+        <h2>Login Test</h2>
+        <form id="testForm">
+            <input type="email" id="email" value="admin@hospital.com" placeholder="Email">
+            <input type="password" id="password" value="admin123" placeholder="Password">
+            <button type="submit">Test Login</button>
+        </form>
+    </div>
+    
+    <div class="test-section">
+        <h2>Session Timeout Test</h2>
+        <button id="timeoutTest">Test Session Timeout (30 min simulation)</button>
+        <div id="timeoutResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Cookie Security Test</h2>
+        <button id="cookieTest">Check Cookie Security</button>
+        <div id="cookieResult"></div>
+    </div>
+    
+    <div id="result"></div>
+
+    <script>
+    document.getElementById('testForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const result = document.getElementById('result');
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        result.innerHTML = 'Testing login...';
+        
+        try {
+            console.log('Starting login test...');
+            
+            const response = await fetch('/backend/api/auth.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({ 
+                    action: 'login', 
+                    email: email, 
+                    password: password 
+                })
+            });
+            
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            
+            const text = await response.text();
+            console.log('Raw response:', text);
+            
+            try {
+                const data = JSON.parse(text);
+                console.log('Parsed JSON:', data);
+                
+                if (data.success) {
+                    result.innerHTML = `
+                        <h3 style="color: green;">✅ LOGIN SUCCESS!</h3>
+                        <p>User: ${data.user.name}</p>
+                        <p>Role: ${data.user.role}</p>
+                        <p>Email: ${data.user.email}</p>
+                    `;
+                } else {
+                    result.innerHTML = `
+                        <h3 style="color: red;">❌ LOGIN FAILED</h3>
+                        <p>Error: ${data.error}</p>
+                    `;
+                }
+            } catch (parseError) {
+                console.error('JSON parse error:', parseError);
+                result.innerHTML = `
+                    <h3 style="color: orange;">⚠️ RESPONSE NOT JSON</h3>
+                    <p>Raw response: <pre>${text}</pre></p>
+                `;
+            }
+            
+        } catch (error) {
+            console.error('Fetch error:', error);
+            result.innerHTML = `
+                <h3 style="color: red;">❌ NETWORK ERROR</h3>
+                <p>${error.message}</p>
+            `;
+        }
+    });
+    
+    // Session timeout test
+    document.getElementById('timeoutTest').addEventListener('click', async function() {
+        const result = document.getElementById('timeoutResult');
+        result.innerHTML = 'Testing session timeout...';
+        
+        try {
+            const response = await fetch('/backend/api/auth.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({ 
+                    action: 'timeout_test'
+                })
+            });
+            
+            const text = await response.text();
+            
+            if (response.status === 440) {
+                result.innerHTML = '<h3 style="color: green;">✅ Session Timeout Working!</h3>';
+            } else {
+                result.innerHTML = `<h3 style="color: red;">❌ Timeout Test Failed</h3>
+                                   <p>Status: ${response.status}</p>
+                                   <p>Response: ${text}</p>`;
+            }
+        } catch (error) {
+            result.innerHTML = `<h3 style="color: red;">❌ NETWORK ERROR</h3>
+                               <p>${error.message}</p>`;
+        }
+    });
+    
+    // Cookie security test
+    document.getElementById('cookieTest').addEventListener('click', function() {
+        const result = document.getElementById('cookieResult');
+        const cookie = document.cookie.match(/PHPSESSID=[^;]+/);
+        
+        if (!cookie) {
+            result.innerHTML = '<h3 style="color: red;">❌ Session Cookie Not Found</h3>';
+            return;
+        }
+        
+        const cookieStr = cookie[0];
+        const isSecure = cookieStr.includes('Secure');
+        const isHttpOnly = cookieStr.includes('HttpOnly');
+        const isSameSite = cookieStr.includes('SameSite=');
+        const sameSiteValue = isSameSite ? (cookieStr.match(/SameSite=([^;]+)/)[1] || 'Not Specified') : 'Not Specified';
+        
+        // Check if we're on HTTPS or HTTP
+        const isHttps = window.location.protocol === 'https:';
+        
+        result.innerHTML = `
+            <h3>Cookie Security Report</h3>
+            <p>Secure Flag: ${isSecure ? '✅ Present' : isHttps ? '❌ Missing (Required for HTTPS)' : '⚠️ Not required for HTTP'}</p>
+            <p>HttpOnly Flag: ${isHttpOnly ? '✅ Present' : '❌ Missing'}</p>
+            <p>SameSite Policy: ${sameSiteValue === 'Strict' ? '✅ Strict' : sameSiteValue === 'Lax' ? '⚠️ Lax' : '❌ Not Specified'}</p>
+            <p>Environment: ${isHttps ? '🔒 HTTPS' : '🔓 HTTP'}</p>
+        `;
+    });
+    </script>
+</body>
+</html>

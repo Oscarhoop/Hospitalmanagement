@@ -1,0 +1,23 @@
+# Environment files
+.env
+*.env.local
+
+# SQLite databases
+backend/data/*.sqlite
+backend/data/*.db
+backend/data/*.sqlite3
+
+# Logs and runtime artifacts
+*.log
+backend/logs/
+scripts/cron.log
+
+# Vendor/installed dependencies
+vendor/
+node_modules/
+
+# OS/IDE noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

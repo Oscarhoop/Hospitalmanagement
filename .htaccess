@@ -1,0 +1,8 @@
+DirectoryIndex frontend/index.html index.php
+AddHandler application/x-httpd-php .php
+
+# Route all requests to router.php
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ router.php [QSA,L]

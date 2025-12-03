@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Management System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Login Page -->
+     <div id="toastContainer" class="toast-container"></div>
+    <div id="loginPage" class="login-page">
+        <div class="login-card">
+            <div class="login-brand-panel">
+                <div class="login-brand-content">
+                    <div class="login-logo-circle">MCH</div>
+                    <h2 class="login-brand-name">Mbagathi County Hospital</h2>
+                    <p class="login-brand-tagline">Advancing patient care with efficiency and compassion.</p>
+                </div>
+            </div>
+
+            <div class="login-form-panel">
+                <div class="login-form-header">
+                    <span class="login-form-chip">Staff Portal</span>
+                    <h1 class="login-title">Sign in to continue</h1>
+                    <p class="login-subtitle">Use your work email address and password.</p>
+                </div>
+                
+                <form id="loginFormPage" onsubmit="handleLogin(event)">
+                    <div class="login-form-group">
+                        <label for="loginEmailPage">Email Address</label>
+                        <input type="email" id="loginEmailPage" class="form-control" placeholder="name@hospital.org" required autofocus>
+                    </div>
+                    
+                    <div class="login-form-group">
+                        <label for="loginPasswordPage">Password</label>
+                        <input type="password" id="loginPasswordPage" class="form-control" placeholder="••••••••" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary login-btn">Sign In</button>
+                </form>
+
+                <div class="login-form-footer">
+                    <a href="#" class="login-link">Forgot password?</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="main-app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <button id="sidebarToggleBtn" class="sidebar-toggle" aria-label="Toggle sidebar" title="Toggle sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <button class="sidebar-nav-btn active" onclick="showSection('dashboard')">
+                    <span class="nav-icon"><i class="fas fa-chart-line"></i></span>
+                    <span class="nav-label">Dashboard</span>
+                </button>
+                <button class="sidebar-nav-btn" onclick="showSection('patients')">
+                    <span class="nav-icon"><i class="fas fa-users"></i></span>
+                    <span class="nav-label">Patients</span>
+                </button>
+                <button class="sidebar-nav-btn" onclick="showSection('appointments')">
+                    <span class="nav-icon"><i class="fas fa-calendar"></i></span>
+                    <span class="nav-label">Appointments</span>
+                </button>
+                <button class="sidebar-nav-btn" onclick="showSection('rooms')">
+                    <span class="nav-icon"><i class="fas fa-hospital"></i></span>
+                    <span class="nav-label">Rooms</span>
+                </button>
+                <button class="sidebar-nav-btn" onclick="showSection('medical-records')">
+                    <span class="nav-icon"><i class="fas fa-file-medical"></i></span>
+                    <span class="nav-label">Medical Records</span>
+                </button>
+                <button class="sidebar-nav-btn" onclick="showSection('billing')">
+                    <span class="nav-icon"><i class="fas fa-credit-card"></i></span>
+                    <span class="nav-label">Billing</span>
+                </button>
+                <button class="sidebar-nav-btn" onclick="showSection('reports')">
+                    <span class="nav-icon"><i class="fas fa-chart-bar"></i></span>
+                    <span class="nav-label">Reports</span>
+                </button>
+                
+                <!-- Staff Management Group (Expandable) -->
+                <button class="sidebar-nav-btn sidebar-group-btn" onclick="toggleStaffMenu()" id="staffMenuToggle">
+                    <span class="nav-icon"><i class="fas fa-user-tie"></i></span>
+                    <span class="nav-label">Staff Management</span>
+                    <span class="nav-arrow"><i class="fas fa-chevron-down"></i></span>
+                </button>
+                <div class="sidebar-submenu" id="staffSubmenu">
+                    <button class="sidebar-nav-btn sidebar-sub-btn" onclick="showSection('doctors')">
+                        <span class="nav-icon"><i class="fas fa-user-md"></i></span>
+                        <span class="nav-label">Doctors</span>
+                    </button>
+                    <button class="sidebar-nav-btn sidebar-sub-btn" onclick="showSection('schedules')">
+                        <span class="nav-icon"><i class="fas fa-calendar-alt"></i></span>
+                        <span class="nav-label">Scheduling</span>
+                    </button>
+                    <button class="sidebar-nav-btn sidebar-sub-btn" onclick="showSection('users')">
+                        <span class="nav-icon"><i class="fas fa-user"></i></span>
+                        <span class="nav-label">Users</span>
+                    </button>
+                    <button class="sidebar-nav-btn sidebar-sub-btn" onclick="showSection('audit-trail')" id="auditTrailMenuBtn" style="display: none;">
+                        <span class="nav-icon"><i class="fas fa-scroll"></i></span>
+                        <span class="nav-label">Audit Trail</span>
+                    </button>
+                </div>
+                
+                <!-- Divider -->
+                <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); margin: 1rem 0; padding-top: 1rem;">
+                    <button id="sidebarExportBtn" class="sidebar-nav-btn" onclick="exportCurrentTable()" style="color: rgba(255, 255, 255, 0.5); font-size: 0.75rem;">
+                        <span class="nav-icon"><i class="fas fa-download"></i></span>
+                        <span class="nav-label">Export</span>
+                    </button>
+                    <button id="sidebarSearchBtn" class="sidebar-nav-btn" onclick="showGlobalSearchModal()" style="color: rgba(255, 255, 255, 0.5); font-size: 0.75rem;">
+                        <span class="nav-icon"><i class="fas fa-search"></i></span>
+                        <span class="nav-label">Search</span>
+                    </button>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div id="sidebarUserInfo" class="sidebar-user" style="display: none;">
+                    <div class="sidebar-user-details">
+                        <div class="sidebar-user-name" id="sidebarUserName"></div>
+                        <div class="sidebar-user-role" id="sidebarUserRole"></div> 
+                    </div>
+                </div>
+                <button onclick="logout()" class="sidebar-logout-btn" style="display: none;" id="sidebarLogoutBtn">
+                    <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
+                    <span class="nav-label">Logout</span>
+                </button>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <div class="main-content">
+            
+            <!-- Page Content -->
+            <main class="container">
+        <!-- Alert -->
+        <div id="alert" class="alert"></div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section active">
+            <div class="page-header">
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">Real-time insights into patient flow, appointments, and operational metrics</p>
+            </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalPatients">0</div>
+                <div class="stat-label">Total Patients</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="newThisMonth">0</div>
+                <div class="stat-label">New This Month</div>
+            </div>
+            <div class="stat-card">
+                    <div class="stat-number" id="totalAppointments">0</div>
+                    <div class="stat-label">Total Appointments</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingAppointments">0</div>
+                    <div class="stat-label">Pending Appointments</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalRevenue">0</div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="activeDoctors">0</div>
+                    <div class="stat-label">Active Doctors</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patients Section -->
+        <div id="patients" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Patient Management</h1>
+                <p class="page-subtitle">Comprehensive patient profiles with medical history, allergies, and emergency contacts</p>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" id="patientSearch" class="form-control" placeholder="Search patients..." onkeyup="searchPatients()">
+                        </div>
+                        <div class="form-group">
+                            <select id="genderFilter" class="form-control" onchange="filterPatients()">
+                                <option value="">All Genders</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+<button id="patientsAddBtn" onclick="showPatientModal()" class="btn btn-add">+ Add Patient</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <!-- Patients Table -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Patient Records</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-container">
+                    <table id="patientsTable">
+                        <thead>
+                            <tr>
+                                    <th onclick="sortPatients('first_name')">Patient Name</th>
+                                    <th onclick="sortPatients('dob')">Date of Birth</th>
+                                    <th onclick="sortPatients('gender')">Gender</th>
+                                <th>Phone Number</th>
+                                <th>Email Address</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Patients will be listed here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <!-- Appointments Section -->
+        <div id="appointments" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Appointment Management</h1>
+                <p class="page-subtitle">Coordinate patient visits with doctors and rooms, track appointment status</p>
+            </div>
+                    
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="date" id="appointmentDateFrom" class="form-control" onchange="filterAppointments()">
+                        </div>
+                        <div class="form-group">
+                            <input type="date" id="appointmentDateTo" class="form-control" onchange="filterAppointments()">
+                        </div>
+                        <div class="form-group">
+                            <select id="appointmentStatusFilter" class="form-control" onchange="filterAppointments()">
+                                <option value="">All Status</option>
+                                <option value="scheduled">Scheduled</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                    </div>
+                    <div class="form-group">
+<button id="appointmentsAddBtn" onclick="showAppointmentModal()" class="btn btn-add">+ Schedule Appointment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                    
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Appointments</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table id="appointmentsTable">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Date & Time</th>
+                                <th>Room</th>
+                                <th>Status</th>
+                                <th>Reason</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Appointments will be listed here -->
+                        </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doctors Section -->
+        <div id="doctors" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Doctor Management</h1>
+                <p class="page-subtitle">Maintain physician information, specialties, licenses, and contact details</p>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" id="doctorSearch" class="form-control" placeholder="Search doctors..." onkeyup="searchDoctors()">
+                        </div>
+                        <div class="form-group">
+                            <select id="specialtyFilter" class="form-control" onchange="filterDoctors()">
+                                <option value="">All Specialties</option>
+                                <option value="Cardiology">Cardiology</option>
+                                <option value="Pediatrics">Pediatrics</option>
+                                <option value="Dermatology">Dermatology</option>
+                                <option value="Orthopedics">Orthopedics</option>
+                            </select>
+                        </div>
+                    <div class="form-group">
+<button id="doctorsAddBtn" onclick="showDoctorModal()" class="btn btn-add">+ Add Doctor</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                    
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Doctors</h2>
+                    </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table id="doctorsTable">
+                            <thead>
+                                <tr>
+                                    <th>Doctor Name</th>
+                                    <th>Specialty</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                    <th>License</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Doctors will be listed here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Rooms Section -->
+        <div id="rooms" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Room Management</h1>
+                <p class="page-subtitle">Track room status, capacity, and type across all hospital floors</p>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" id="roomSearch" class="form-control" placeholder="Search rooms..." onkeyup="searchRooms()">
+                        </div>
+                        <div class="form-group">
+                            <select id="roomTypeFilter" class="form-control" onchange="filterRooms()">
+                                <option value="">All Types</option>
+                                <option value="consultation">Consultation</option>
+                                <option value="examination">Examination</option>
+                                <option value="surgery">Surgery</option>
+                                <option value="emergency">Emergency</option>
+                                <option value="general">General</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select id="roomAvailabilityFilter" class="form-control" onchange="filterRooms()">
+                                <option value="">All Rooms</option>
+                                <option value="1">Available Only</option>
+                                <option value="2">Occupied Only</option>
+                                <option value="0">Unavailable Only</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+<button id="roomsAddBtn" onclick="showRoomModal()" class="btn btn-add">+ Add Room</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Rooms</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table id="roomsTable">
+                            <thead>
+                                <tr>
+                                    <th>Room Number</th>
+                                    <th>Room Name</th>
+                                    <th>Type</th>
+                                    <th>Floor</th>
+                                    <th>Capacity</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Rooms will be listed here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medical Records Section -->
+        <div id="medical-records" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Medical Records</h1>
+                <p class="page-subtitle">Store and retrieve diagnoses, treatments, prescriptions, and lab results</p>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <select id="recordPatientFilter" class="form-control" onchange="filterRecords()">
+                                <option value="">All Patients</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select id="recordTypeFilter" class="form-control" onchange="filterRecords()">
+                                <option value="">All Types</option>
+                                <option value="diagnosis">Diagnosis</option>
+                                <option value="treatment">Treatment</option>
+                                <option value="prescription">Prescription</option>
+                                <option value="lab_result">Lab Result</option>
+                                <option value="imaging">Imaging</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+<button id="recordsAddBtn" onclick="showRecordModal()" class="btn btn-add">+ Add Record</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Medical Records</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table id="recordsTable">
+                            <thead>
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>Type</th>
+                                    <th>Title</th>
+                                    <th>Date</th>
+                                    <th>Created By</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Records will be listed here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Billing Section -->
+        <div id="billing" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Billing Management</h1>
+                <p class="page-subtitle">Process invoices, track payment status, and manage insurance claims</p>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <select id="billingPatientFilter" class="form-control" onchange="filterBilling()">
+                                <option value="">All Patients</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select id="billingStatusFilter" class="form-control" onchange="filterBilling()">
+                                <option value="">All Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="paid">Paid</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+<button id="billingAddBtn" onclick="showBillingModal()" class="btn btn-add">+ Add Bill</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Billing Records</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table id="billingTable">
+                            <thead>
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Due Date</th>
+                                    <th>Payment Method</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Billing records will be listed here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div id="reports" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Reports & Analytics</h1>
+                <p class="page-subtitle">Comprehensive data analysis for patient demographics, revenue, and operations</p>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <select id="reportType" class="form-control" onchange="loadReport()">
+                                <option value="dashboard">Dashboard Overview</option>
+                                <option value="patients">Patient Demographics</option>
+                                <option value="appointments">Appointment Analytics</option>
+                                <option value="revenue">Revenue Analysis</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="date" id="reportDateFrom" class="form-control" onchange="loadReport()">
+                        </div>
+                        <div class="form-group">
+                            <input type="date" id="reportDateTo" class="form-control" onchange="loadReport()">
+                        </div>
+                        <div class="form-group">
+                            <button onclick="exportData()" class="btn btn-success">Export Data</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title" id="reportTitle">Dashboard Overview</h2>
+                </div>
+                <div class="card-body">
+                    <div id="reportContent">
+                        <!-- Report content will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Section (Admin Only) -->
+        <div id="users" class="section">
+            <div class="page-header">
+                <h1 class="page-title">User Management</h1>
+                <p class="page-subtitle">Configure user roles, permissions, and access controls for all staff members</p>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" id="userSearch" class="form-control" placeholder="Search users..." onkeyup="searchUsers()">
+                        </div>
+                        <div class="form-group">
+                            <select id="userRoleFilter" class="form-control" onchange="filterUsers()">
+                                <option value="">All Roles</option>
+                                <option value="admin">Administrator</option>
+                                <option value="receptionist">Receptionist</option>
+                                <option value="doctor">Doctor</option>
+                                <option value="nurse">Nurse</option>
+                                <option value="pharmacist">Pharmacist</option>
+                                <option value="lab_tech">Lab Technician</option>
+                                <option value="billing">Billing Officer</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+<button id="usersAddBtn" onclick="showUserModal()" class="btn btn-add">+ Add User</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">System Users</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table id="usersTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Phone</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Users will be listed here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audit Trail Section (Admin Only) -->
+        <!-- Audit Trail Section -->
+        <div id="audit-trail" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Audit Trail</h1>
+                <p class="page-subtitle">Complete audit log of all data modifications, logins, and system events</p>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" id="auditSearch" class="form-control" placeholder="Search by user, action, or target..." onkeyup="searchAuditTrail()">
+                        </div>
+                        <div class="form-group">
+                            <select id="auditActionFilter" class="form-control" onchange="filterAuditTrail()">
+                                <option value="">All Actions</option>
+                                <option value="create">Create</option>
+                                <option value="update">Update</option>
+                                <option value="delete">Delete</option>
+                                <option value="login">Login</option>
+                                <option value="logout">Logout</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select id="auditTargetFilter" class="form-control" onchange="filterAuditTrail()">
+                                <option value="">All Targets</option>
+                                <option value="patient">Patient</option>
+                                <option value="appointment">Appointment</option>
+                                <option value="doctor">Doctor</option>
+                                <option value="user">User</option>
+                                <option value="billing">Billing</option>
+                                <option value="medical_record">Medical Record</option>
+                                <option value="room">Room</option>
+                                <option value="schedule">Schedule</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button onclick="loadAuditTrail()" class="btn btn-primary">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audit Trail Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">System Activity Log</h2>
+                    <span class="card-subtitle" id="auditTrailCount">0 entries</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table id="auditTrailTable">
+                            <thead>
+                                <tr>
+                                    <th onclick="sortAuditTrail('timestamp')">Timestamp <i class="fas fa-sort"></i></th>
+                                    <th onclick="sortAuditTrail('user_name')">User <i class="fas fa-sort"></i></th>
+                                    <th onclick="sortAuditTrail('action')">Action <i class="fas fa-sort"></i></th>
+                                    <th onclick="sortAuditTrail('target_type')">Target <i class="fas fa-sort"></i></th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Audit trail will be listed here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Staff Scheduling Section -->
+        <div id="schedules" class="section">
+            <div class="page-header">
+                <h1 class="page-title">Staff Scheduling</h1>
+                <p class="page-subtitle">Plan work schedules, assign shifts, and handle staff leave applications</p>
+            </div>
+
+            <!-- Schedule Navigation Tabs -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-row">
+                        <button class="btn btn-secondary" id="scheduleCalendarBtn" onclick="showScheduleView('calendar')"><i class="fas fa-calendar"></i> Calendar View</button>
+                        <button class="btn btn-secondary active" id="scheduleListBtn" onclick="showScheduleView('list')"><i class="fas fa-list"></i> List View</button>
+                        <button class="btn btn-secondary" id="scheduleLeaveBtn" onclick="showScheduleView('leave')"><i class="fas fa-umbrella-beach"></i> Leave Requests</button>
+                        <div style="flex: 1;"></div>
+                        <button id="schedulesAddBtn" onclick="showScheduleModal()" class="btn btn-add">+ Add Schedule</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar View -->
+            <div id="scheduleCalendarView" class="card" style="display: none;">
+                <div class="card-header">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <button onclick="previousMonth()" class="btn btn-secondary"><i class="fas fa-chevron-left"></i> Previous</button>
+                        <h2 class="card-title" id="scheduleMonthTitle"></h2>
+                        <button onclick="nextMonth()" class="btn btn-secondary">Next <i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="scheduleCalendar" style="overflow-x: auto;">
+                        <!-- Calendar will be rendered here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- List View -->
+            <div id="scheduleListView" class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Staff Schedules</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-row" style="margin-bottom: 1rem;">
+                        <div class="form-group">
+                            <select id="scheduleStaffFilter" class="form-control" onchange="filterSchedules()">
+                                <option value="">All Staff</option>
+                                <!-- Staff options will be loaded here -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="date" id="scheduleDateFrom" class="form-control" onchange="filterSchedules()">
+                        </div>
+                        <div class="form-group">
+                            <input type="date" id="scheduleDateTo" class="form-control" onchange="filterSchedules()">
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="schedulesTable">
+                            <thead>
+                                <tr>
+                                    <th>Staff Member</th>
+                                    <th>Role</th>
+                                    <th>Date</th>
+                                    <th>Shift</th>
+                                    <th>Time</th>
+                                    <th>Appointments</th>
+                                    <th>Patients</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Schedules will be listed here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leave Requests View -->
+            <div id="scheduleLeaveView" class="card" style="display: none;">
+                <div class="card-header">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 class="card-title">Leave Requests</h2>
+                        <button onclick="showLeaveRequestModal()" class="btn btn-add">+ Request Leave</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="form-row" style="margin-bottom: 1rem;">
+                        <div class="form-group">
+                            <select id="leaveStatusFilter" class="form-control" onchange="filterLeaveRequests()">
+                                <option value="">All Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="leaveRequestsTable">
+                            <thead>
+                                <tr>
+                                    <th>Staff Member</th>
+                                    <th>Role</th>
+                                    <th>Leave Type</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Reason</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Leave requests will be listed here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            </main>
+        </div> <!-- Close main-content -->
+
+    <!-- Enhanced Patient Modal -->
+    <div id="patientModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="patientModalTitle" class="modal-title">Add Patient</h2>
+                <button class="close-btn" onclick="hideModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="patientForm" onsubmit="savePatient(event)">
+                    <!-- Critical Medical Information Alert Section -->
+                    <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem; border-radius: var(--radius); margin-bottom: 1.5rem;">
+                        <div style="font-weight: 600; color: #92400e; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-exclamation-circle"></i> Critical Medical Information
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="patientBloodType" style="color: #92400e; font-weight: 600;"><i class="fas fa-tint"></i> Blood Type</label>
+                                <select id="patientBloodType" name="blood_type" class="form-control" style="border-color: #f59e0b; font-weight: 500;">
+                                    <option value="">Select Blood Type</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="patientAllergies" style="color: #92400e; font-weight: 600;"><i class="fas fa-exclamation-triangle"></i> Allergies</label>
+                            <textarea id="patientAllergies" name="allergies" class="form-control" rows="2" placeholder="List any known allergies (medications, foods, environmental)" style="border-color: #f59e0b;"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Basic Information Section -->
+                    <div style="border-bottom: 2px solid var(--border-light); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                        <h3 style="font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 1rem;"><i class="fas fa-info-circle"></i> Basic Information</h3>
+                        <div class="section-container">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="patientFirstName">First Name</label>
+                                    <input type="text" id="patientFirstName" name="first_name" class="form-control" placeholder="Enter first name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="patientLastName">Last Name</label>
+                                    <input type="text" id="patientLastName" name="last_name" class="form-control" placeholder="Enter last name" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="patientDob">Date of Birth</label>
+                                    <input type="date" id="patientDob" name="dob" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="patientGender">Gender</label>
+                                    <select id="patientGender" name="gender" class="form-control">
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="patientAddress">Address</label>
+                                <textarea id="patientAddress" name="address" class="form-control" rows="2" placeholder="Enter full address"></textarea>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="patientPhone">Phone Number</label>
+                                    <input type="tel" id="patientPhone" name="phone" class="form-control" placeholder="Enter phone number">
+                                </div>
+                                <div class="form-group">
+                                    <label for="patientEmail">Email Address</label>
+                                    <input type="email" id="patientEmail" name="email" class="form-control" placeholder="Enter email address">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Emergency Contact Section -->
+                    <div style="border-bottom: 2px solid var(--border-light); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                        <h3 style="font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 1rem;"><i class="fas fa-phone-alt"></i> Emergency Contact</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="patientEmergencyContact">Contact Name</label>
+                                <input type="text" id="patientEmergencyContact" name="emergency_contact" class="form-control" placeholder="Emergency contact name">
+                            </div>
+                            <div class="form-group">
+                                <label for="patientEmergencyPhone">Contact Phone</label>
+                                <input type="tel" id="patientEmergencyPhone" name="emergency_phone" class="form-control" placeholder="Emergency phone number">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Insurance Information Section -->
+                    <div style="border-bottom: 2px solid var(--border-light); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                        <h3 style="font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 1rem;">🏥 Insurance Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="patientInsuranceProvider">Insurance Provider</label>
+                                <input type="text" id="patientInsuranceProvider" name="insurance_provider" class="form-control" placeholder="Insurance company">
+                            </div>
+                            <div class="form-group">
+                                <label for="patientInsuranceNumber">Insurance Number</label>
+                                <input type="text" id="patientInsuranceNumber" name="insurance_number" class="form-control" placeholder="Policy number">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Medical History Section -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <h3 style="font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 1rem;">📝 Medical History</h3>
+                        <div class="form-group">
+                            <label for="patientMedicalHistory">Medical History</label>
+                            <textarea id="patientMedicalHistory" name="medical_history" class="form-control" rows="3" placeholder="Previous medical conditions, surgeries, chronic diseases, etc."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="patientNotes">Additional Notes</label>
+                            <textarea id="patientNotes" name="notes" class="form-control" rows="3" placeholder="Any additional notes or comments"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="patientSaveBtn">Save Patient</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Availability Modal -->
+    <div id="availabilityModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Check Availability</h2>
+                <button class="close-btn" onclick="closeAvailabilityModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="availabilityDate">Select Date</label>
+                    <input type="date" id="availabilityDate" class="form-control" onchange="checkAvailability()">
+                </div>
+                
+                <div id="availabilityResults">
+                    <!-- Availability results will be displayed here -->
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeAvailabilityModal()">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="proceedToScheduling()">Proceed to Schedule</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointment Modal -->
+    <div id="appointmentModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="appointmentModalTitle" class="modal-title">Schedule Appointment</h2>
+                <button class="close-btn" onclick="hideModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="appointmentForm" onsubmit="saveAppointment(event)">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-secondary" style="width: 100%; margin-bottom: 1rem;" onclick="showAvailabilityModal()">
+                            <i class="fas fa-search"></i> Check Doctor & Room Availability
+                        </button>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="appointmentPatient">Patient</label>
+                            <select id="appointmentPatient" name="patient_id" class="form-control" required>
+                                <option value="">Select Patient</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="appointmentDoctor">Doctor</label>
+                            <select id="appointmentDoctor" name="doctor_id" class="form-control">
+                                <option value="">Select Doctor</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="appointmentRoom">Room</label>
+                        <select id="appointmentRoom" name="room_id" class="form-control">
+                            <option value="">Select Room (Optional)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="appointmentStartTime">Start Time</label>
+                            <input type="datetime-local" id="appointmentStartTime" name="start_time" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="appointmentEndTime">End Time</label>
+                            <input type="datetime-local" id="appointmentEndTime" name="end_time" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="appointmentStatus">Status</label>
+                        <select id="appointmentStatus" name="status" class="form-control">
+                            <option value="scheduled">Scheduled</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="appointmentReason">Reason for Visit</label>
+                        <textarea id="appointmentReason" name="reason" class="form-control" rows="3" placeholder="Describe the reason for the appointment"></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="appointmentSaveBtn">Schedule Appointment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Billing Modal -->
+    <div id="billingModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="billingModalTitle" class="modal-title">Add Bill</h2>
+                <button class="close-btn" onclick="hideModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="billingForm" onsubmit="saveBilling(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="billingPatient">Patient</label>
+                            <select id="billingPatient" name="patient_id" class="form-control" required>
+                                <option value="">Select Patient</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="billingAmount">Amount (KES)</label>
+                            <input type="number" id="billingAmount" name="amount" class="form-control" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="billingStatus">Status</label>
+                            <select id="billingStatus" name="status" class="form-control">
+                                <option value="pending">Pending</option>
+                                <option value="paid">Paid</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="billingDueDate">Due Date</label>
+                            <input type="date" id="billingDueDate" name="due_date" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="billingPaymentMethod">Payment Method</label>
+                            <select id="billingPaymentMethod" name="payment_method" class="form-control">
+                                <option value="">Select Payment Method</option>
+                                <option value="cash">Cash</option>
+                                <option value="card">Card</option>
+                                <option value="bank_transfer">Bank Transfer</option>
+                                <option value="mobile_money">Mobile Money</option>
+                                <option value="insurance">Insurance</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="billingPaymentDate">Payment Date</label>
+                            <input type="datetime-local" id="billingPaymentDate" name="payment_date" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="billingNotes">Notes</label>
+                        <textarea id="billingNotes" name="notes" class="form-control" rows="3" placeholder="Additional notes about the billing"></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="billingSaveBtn">Add Bill</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- M-Pesa Payment Modal -->
+    <div id="mpesaModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Pay with M-Pesa</h2>
+                <button class="close-btn" onclick="hideModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="mpesaPaymentInfo" class="mpesa-info">
+                    <p><strong>Bill Amount:</strong> <span id="mpesaBillAmount"></span></p>
+                    <p><strong>Patient:</strong> <span id="mpesaPatientName"></span></p>
+                </div>
+                
+                <form id="mpesaForm" onsubmit="processMpesaPayment(event)">
+                    <input type="hidden" id="mpesaBillingId" name="billing_id">
+                    
+                    <div class="form-group">
+                        <label for="mpesaPhone">M-Pesa Phone Number</label>
+                        <input 
+                            type="tel" 
+                            id="mpesaPhone" 
+                            name="phone_number" 
+                            class="form-control" 
+                            placeholder="e.g., 0712345678 or 254712345678"
+                            pattern="^(0|254|\+254)?[17]\d{8}$"
+                            required>
+                        <small class="form-help">Enter Safaricom number (07XX or 01XX)</small>
+                    </div>
+                    
+                    <div id="mpesaStatus" class="mpesa-status hidden">
+                        <div class="status-message"></div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+                        <button type="submit" class="btn btn-success" id="mpesaPayBtn">
+                            <i class="fas fa-mobile-alt"></i> Send Payment Request
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="mpesa-instructions">
+                    <h4>How it works:</h4>
+                    <ol>
+                        <li>Enter your M-Pesa phone number</li>
+                        <li>Click "Send Payment Request"</li>
+                        <li>Check your phone for M-Pesa prompt</li>
+                        <li>Enter your M-Pesa PIN to complete payment</li>
+                        <li>Payment will be confirmed automatically</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div id="userModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="userModalTitle" class="modal-title">Add User</h2>
+                <button class="close-btn" onclick="hideModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm" onsubmit="saveUser(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="userName">Full Name</label>
+                            <input type="text" id="userName" name="name" class="form-control" placeholder="Enter full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="userEmail">Email Address</label>
+                            <input type="email" id="userEmail" name="email" class="form-control" placeholder="Enter email address" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="userRole">Role</label>
+                            <select id="userRole" name="role" class="form-control" required>
+                                <option value="admin">Administrator</option>
+                                <option value="receptionist">Receptionist</option>
+                                <option value="doctor">Doctor</option>
+                                <option value="nurse">Nurse</option>
+                                <option value="pharmacist">Pharmacist</option>
+                                <option value="lab_tech">Lab Technician</option>
+                                <option value="billing">Billing Officer</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="userPhone">Phone Number</label>
+                            <input type="tel" id="userPhone" name="phone" class="form-control" placeholder="Enter phone number">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="userPassword">Password <span id="passwordLabel">(leave blank to keep current)</span></label>
+                        <input type="password" id="userPassword" name="password" class="form-control" placeholder="Enter password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="userNotes">Notes</label>
+                        <textarea id="userNotes" name="notes" class="form-control" rows="3" placeholder="Additional notes about this user"></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="userSaveBtn">Save User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patient Details Modal -->
+    <div id="patientDetailsModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Patient Details</h2>
+                <button class="close-btn" onclick="closePatientDetails()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="patientDetailsContent">
+                    <!-- Patient details will be loaded here dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Medical Record Modal -->
+    <div id="recordModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="recordModalTitle" class="modal-title">Add Medical Record</h2>
+                <button class="close-btn" onclick="hideModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="recordForm" onsubmit="saveRecord(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="recordPatient">Patient <span style="color: var(--danger);">*</span></label>
+                            <select id="recordPatient" name="patient_id" class="form-control" required>
+                                <option value="">Select Patient</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="recordAppointment">Related Appointment (Optional)</label>
+                            <select id="recordAppointment" name="appointment_id" class="form-control">
+                                <option value="">No related appointment</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="recordType">Record Type <span style="color: var(--danger);">*</span></label>
+                            <select id="recordType" name="record_type" class="form-control" required>
+                                <option value="">Select Type</option>
+                                <option value="diagnosis"><i class="fas fa-microscope"></i> Diagnosis</option>
+                                <option value="treatment"><i class="fas fa-pills"></i> Treatment</option>
+                                <option value="prescription"><i class="fas fa-prescription"></i> Prescription</option>
+                                <option value="lab_result"><i class="fas fa-flask"></i> Lab Result</option>
+                                <option value="imaging"><i class="fas fa-x-ray"></i> Imaging</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="recordTitle">Title <span style="color: var(--danger);">*</span></label>
+                            <input type="text" id="recordTitle" name="title" class="form-control" placeholder="e.g., Annual Checkup Results" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="recordContent">Content / Notes</label>
+                        <textarea id="recordContent" name="content" class="form-control" rows="6" placeholder="Enter detailed medical notes, observations, findings, etc."></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="recordSaveBtn">Save Record</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Medical Record Modal -->
+    <div id="viewRecordModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Medical Record Details</h2>
+                <button class="close-btn" onclick="closeViewRecord()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="viewRecordContent">
+                    <!-- Record details will be loaded here dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Room Modal -->
+    <div id="roomModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="roomModalTitle" class="modal-title">Add Room</h2>
+                <button class="close-btn" onclick="hideModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="roomForm" onsubmit="saveRoom(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="roomNumber">Room Number <span style="color: var(--danger);">*</span></label>
+                            <input type="text" id="roomNumber" name="room_number" class="form-control" placeholder="e.g., R101" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="roomName">Room Name <span style="color: var(--danger);">*</span></label>
+                            <input type="text" id="roomName" name="room_name" class="form-control" placeholder="e.g., Consultation Room 1" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="roomType">Room Type</label>
+                            <select id="roomType" name="room_type" class="form-control">
+                                <option value="general">General</option>
+                                <option value="consultation">Consultation</option>
+                                <option value="examination">Examination</option>
+                                <option value="surgery">Surgery</option>
+                                <option value="emergency">Emergency</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="roomFloor">Floor</label>
+                            <input type="text" id="roomFloor" name="floor" class="form-control" placeholder="e.g., 1, 2, Ground">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="roomCapacity">Capacity</label>
+                            <input type="number" id="roomCapacity" name="capacity" class="form-control" value="1" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="roomIsAvailable">Status</label>
+                            <select id="roomIsAvailable" name="is_available" class="form-control">
+                                <option value="1">Available</option>
+                                <option value="2">Occupied</option>
+                                <option value="0">Unavailable</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="roomNotes">Notes</label>
+                        <textarea id="roomNotes" name="notes" class="form-control" rows="3" placeholder="Additional notes about the room"></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="roomSaveBtn">Save Room</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doctor Modal -->
+    <div id="doctorModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="doctorModalTitle" class="modal-title">Add Doctor</h2>
+                <button class="close-btn" onclick="hideModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="doctorForm" onsubmit="saveDoctor(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="doctorFirstName">First Name <span style="color: var(--danger);">*</span></label>
+                            <input type="text" id="doctorFirstName" name="first_name" class="form-control" placeholder="Enter first name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="doctorLastName">Last Name <span style="color: var(--danger);">*</span></label>
+                            <input type="text" id="doctorLastName" name="last_name" class="form-control" placeholder="Enter last name" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="doctorSpecialty">Specialty</label>
+                            <select id="doctorSpecialty" name="specialty" class="form-control">
+                                <option value="">Select Specialty</option>
+                                <option value="General Practice">General Practice</option>
+                                <option value="Cardiology">Cardiology</option>
+                                <option value="Pediatrics">Pediatrics</option>
+                                <option value="Dermatology">Dermatology</option>
+                                <option value="Orthopedics">Orthopedics</option>
+                                <option value="Neurology">Neurology</option>
+                                <option value="Oncology">Oncology</option>
+                                <option value="Psychiatry">Psychiatry</option>
+                                <option value="Surgery">Surgery</option>
+                                <option value="Obstetrics & Gynecology">Obstetrics & Gynecology</option>
+                                <option value="Radiology">Radiology</option>
+                                <option value="Anesthesiology">Anesthesiology</option>
+                                <option value="Emergency Medicine">Emergency Medicine</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="doctorLicenseNumber">License Number</label>
+                            <input type="text" id="doctorLicenseNumber" name="license_number" class="form-control" placeholder="Enter license number">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="doctorPhone">Phone Number</label>
+                            <input type="tel" id="doctorPhone" name="phone" class="form-control" placeholder="Enter phone number">
+                        </div>
+                        <div class="form-group">
+                            <label for="doctorEmail">Email Address</label>
+                            <input type="email" id="doctorEmail" name="email" class="form-control" placeholder="Enter email address">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="doctorNotes">Notes</label>
+                        <textarea id="doctorNotes" name="notes" class="form-control" rows="3" placeholder="Additional notes about the doctor"></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="doctorSaveBtn">Save Doctor</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Modal -->
+    <div id="scheduleModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="scheduleModalTitle" class="modal-title">Add Schedule</h2>
+                <button class="close-btn" onclick="hideModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="scheduleForm" onsubmit="saveSchedule(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="scheduleUserId">Staff Member <span style="color: var(--danger);">*</span></label>
+                            <select id="scheduleUserId" name="user_id" class="form-control" required>
+                                <option value="">Select Staff</option>
+                                <!-- Staff will be loaded here -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="scheduleTemplate">Shift Template</label>
+                            <select id="scheduleTemplate" name="shift_template_id" class="form-control" onchange="loadShiftTimes()">
+                                <option value="">Select Template</option>
+                                <!-- Templates will be loaded here -->
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="scheduleDate">Date <span style="color: var(--danger);">*</span></label>
+                            <input type="date" id="scheduleDate" name="schedule_date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="scheduleStatus">Status</label>
+                            <select id="scheduleStatus" name="status" class="form-control">
+                                <option value="scheduled">Scheduled</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="scheduleStartTime">Start Time <span style="color: var(--danger);">*</span></label>
+                            <input type="time" id="scheduleStartTime" name="start_time" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="scheduleEndTime">End Time <span style="color: var(--danger);">*</span></label>
+                            <input type="time" id="scheduleEndTime" name="end_time" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="scheduleNotes">Notes</label>
+                        <textarea id="scheduleNotes" name="notes" class="form-control" rows="3" placeholder="Additional notes about this shift"></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="scheduleSaveBtn">Save Schedule</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leave Request Modal -->
+    <div id="leaveRequestModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Request Leave</h2>
+                <button class="close-btn" onclick="hideModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="leaveRequestForm" onsubmit="submitLeaveRequest(event)">
+                    <div class="form-group">
+                        <label for="leaveUserId">Staff Member <span style="color: var(--danger);">*</span></label>
+                        <select id="leaveUserId" name="user_id" class="form-control" required>
+                            <option value="">Select Staff</option>
+                            <!-- Staff will be loaded here -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="leaveType">Leave Type <span style="color: var(--danger);">*</span></label>
+                        <select id="leaveType" name="leave_type" class="form-control" required>
+                            <option value="">Select Type</option>
+                            <option value="Vacation">Vacation</option>
+                            <option value="Sick Leave">Sick Leave</option>
+                            <option value="Personal">Personal</option>
+                            <option value="Emergency">Emergency</option>
+                            <option value="Maternity">Maternity</option>
+                            <option value="Paternity">Paternity</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="leaveStartDate">Start Date <span style="color: var(--danger);">*</span></label>
+                            <input type="date" id="leaveStartDate" name="start_date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="leaveEndDate">End Date <span style="color: var(--danger);">*</span></label>
+                            <input type="date" id="leaveEndDate" name="end_date" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="leaveReason">Reason <span style="color: var(--danger);">*</span></label>
+                        <textarea id="leaveReason" name="reason" class="form-control" rows="4" placeholder="Provide reason for leave request" required></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Submit Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    </div> <!-- Close main-app -->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="js/rbac-permissions.js?v=3"></script>
+    <script src="js/app.js?v=7"></script>
+    <script src="js/enhancements.js?v=3"></script>
+    <script src="js/scheduling.js?v=1"></script>
+</body>
+</html>
+
+
