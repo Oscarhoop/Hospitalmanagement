@@ -11,6 +11,28 @@ require_once __DIR__ . '/audit.php';
 $method = $_SERVER['REQUEST_METHOD'];
 $pdo = get_pdo();
 
+function ensure_doctor_license_column($pdo) {
+    try {
+        $stmt = $pdo->query("PRAGMA table_info(doctors)");
+        $hasColumn = false;
+        while ($col = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            if ($col['name'] === 'license_number') {
+                $hasColumn = true;
+                break;
+            }
+        }
+        if (!$hasColumn) {
+            $pdo->exec('ALTER TABLE doctors ADD COLUMN license_number TEXT');
+        }
+    } catch (Exception $e) {
+        if (strpos(strtolower($e->getMessage()), 'duplicate column name') === false) {
+            throw $e;
+        }
+    }
+}
+
+ensure_doctor_license_column($pdo);
+
 // Helper functions
 function read_json() {
     $body = file_get_contents('php://input');
