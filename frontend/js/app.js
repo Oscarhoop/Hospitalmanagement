@@ -43,9 +43,18 @@ function escapeHtml(str) {
     return div.innerHTML;
 }
 
+function parseDateValue(value) {
+    if (!value) return null;
+    const hasTimezone = /([zZ]|[+-]\d{2}:?\d{2})$/.test(value);
+    const normalized = hasTimezone ? value : `${value}Z`;
+    const date = new Date(normalized);
+    return isNaN(date.getTime()) ? null : date;
+}
+
 function formatDate(dateString) {
-    if (!dateString) return 'Not specified';
-    return new Date(dateString).toLocaleDateString();
+    const date = parseDateValue(dateString);
+    if (!date) return 'Not specified';
+    return date.toLocaleDateString(undefined, { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
 }
 
 // Global fetch wrapper with credentials
@@ -77,8 +86,9 @@ async function apiFetch(url, options = {}) {
 }
 
 function formatDateTime(dateString) {
-    if (!dateString) return 'Not specified';
-    return new Date(dateString).toLocaleString();
+    const date = parseDateValue(dateString);
+    if (!date) return 'Not specified';
+    return date.toLocaleString(undefined, { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
 }
 
 function formatCurrency(amount) {
