@@ -3,6 +3,7 @@ let leaveRequests = [];
 let shiftTemplates = [];
 let currentScheduleId = null;
 let scheduleCalendarDate = new Date();
+let scheduleDetailsModal = null;
 
 function toggleStaffMenu() {
     const toggle = document.getElementById('staffMenuToggle');
@@ -416,25 +417,7 @@ async function viewScheduleDetails(id) {
         
         detailsHtml += `</div>`;
         
-        // Show in alert or create a modal
-        const modal = document.createElement('div');
-        modal.className = 'modal show';
-        modal.style.display = 'block';
-        modal.innerHTML = `
-            <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
-                <div class="modal-header">
-                    <h2>Schedule Details</h2>
-                    <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
-                </div>
-                <div class="modal-body">
-                    ${detailsHtml}
-                </div>
-                <div class="modal-footer" style="padding: 1rem; border-top: 1px solid #ddd; text-align: right;">
-                    <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Close</button>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
+        showScheduleDetailsModal(detailsHtml);
         
     } catch (error) {
         console.error('Error loading schedule details:', error);
@@ -693,4 +676,32 @@ function hideScheduleModal(modalId) {
         modalElement.classList.remove('show');
         setTimeout(() => modalElement.classList.add('hidden'), 300);
     }
+}
+
+function showScheduleDetailsModal(contentHtml) {
+    if (!scheduleDetailsModal) {
+        scheduleDetailsModal = document.createElement('div');
+        scheduleDetailsModal.id = 'scheduleDetailsModal';
+        scheduleDetailsModal.className = 'modal hidden';
+        scheduleDetailsModal.innerHTML = `
+            <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+                <div class="modal-header">
+                    <h2>Schedule Details</h2>
+                    <button class="close-btn" onclick="hideModal()">&times;</button>
+                </div>
+                <div class="modal-body" id="scheduleDetailsBody"></div>
+                <div class="modal-footer" style="padding: 1rem; border-top: 1px solid #ddd; text-align: right;">
+                    <button class="btn btn-secondary" onclick="hideModal()">Close</button>
+                </div>
+            </div>`;
+        document.body.appendChild(scheduleDetailsModal);
+    }
+
+    const body = scheduleDetailsModal.querySelector('#scheduleDetailsBody');
+    if (body) {
+        body.innerHTML = contentHtml;
+    }
+
+    scheduleDetailsModal.classList.remove('hidden');
+    setTimeout(() => scheduleDetailsModal.classList.add('show'), 10);
 }

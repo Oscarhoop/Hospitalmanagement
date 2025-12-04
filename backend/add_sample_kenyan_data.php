@@ -28,10 +28,12 @@ try {
         ['name' => 'Peter Kiprop', 'email' => 'peter.kiprop@gmail.com', 'password' => 'lab123', 'role' => 'lab_tech'],
     ];
 
+    $userIdsByEmail = [];
     foreach ($users as $u) {
         $hashed = password_hash($u['password'], PASSWORD_DEFAULT);
         $stmt = $pdo->prepare('INSERT INTO users (name, email, password, role, phone, notes) VALUES (?, ?, ?, ?, ?, ?)');
         $stmt->execute([$u['name'], $u['email'], $hashed, $u['role'], '+2547' . rand(10000000, 99999999), 'Sample user']);
+        $userIdsByEmail[$u['email']] = $pdo->lastInsertId();
     }
 
     // Patients
@@ -97,6 +99,39 @@ try {
         $stmt = $pdo->prepare('INSERT INTO appointments (patient_id, doctor_id, room_id, start_time, end_time, status, reason, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
         $end_time = date('Y-m-d H:i:s', strtotime($a['start_time']) + 3600); // +1 hour
         $stmt->execute([$a['patient_id'], $a['doctor_id'], $a['room_id'], $a['start_time'], $end_time, 'scheduled', $a['reason'], 1]);
+    }
+
+    // Populate sample staff schedules if scheduling tables exist
+    $hasStaffSchedules = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name='staff_schedules'")->fetch();
+    if ($hasStaffSchedules) {
+        $today = new DateTime('now');
+        $scheduleSamples = [
+            ['email' => 'mary.njeri@gmail.com', 'offsetDays' => 0, 'start' => '08:00:00', 'end' => '16:00:00', 'notes' => 'Morning clinic duties'],
+            ['email' => 'samuel.kariuki@gmail.com', 'offsetDays' => 0, 'start' => '10:00:00', 'end' => '18:00:00', 'notes' => 'Pediatrics care'],
+            ['email' => 'susan.achieng@gmail.com', 'offsetDays' => 1, 'start' => '07:00:00', 'end' => '15:00:00', 'notes' => 'Ward rounds'],
+            ['email' => 'john.kamau@gmail.com', 'offsetDays' => 1, 'start' => '09:00:00', 'end' => '17:00:00', 'notes' => 'Front desk operations'],
+            ['email' => 'faith.chebet@gmail.com', 'offsetDays' => 2, 'start' => '12:00:00', 'end' => '20:00:00', 'notes' => 'Pharmacy shift']
+        ];
+
+        $scheduleStmt = $pdo->prepare('INSERT INTO staff_schedules (user_id, schedule_date, start_time, end_time, status, notes, created_by) VALUES (?, ?, ?, ?, ?, ?, ?)');
+
+        foreach ($scheduleSamples as $sample) {
+            if (empty($userIdsByEmail[$sample['email']])) {
+                continue;
+            }
+
+            $date = clone $today;
+            $date->modify('+' . $sample['offsetDays'] . ' day');
+            $scheduleStmt->execute([
+                $userIdsByEmail[$sample['email']],
+                $date->format('Y-m-d'),
+                $sample['start'],
+                $sample['end'],
+                'scheduled',
+                $sample['notes'],
+                $userIdsByEmail['grace.wanjiru@gmail.com'] ?? 1 // default to admin if available
+            ]);
+        }
     }
 
     // Create some sample billing records
