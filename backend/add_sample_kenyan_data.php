@@ -26,6 +26,7 @@ try {
         ['name' => 'David Mutua', 'email' => 'david.mutua@gmail.com', 'password' => 'billing123', 'role' => 'billing'],
         ['name' => 'Faith Chebet', 'email' => 'faith.chebet@gmail.com', 'password' => 'pharm123', 'role' => 'pharmacist'],
         ['name' => 'Peter Kiprop', 'email' => 'peter.kiprop@gmail.com', 'password' => 'lab123', 'role' => 'lab_tech'],
+        ['name' => 'Tester', 'email' => 'testuser@gmail.com', 'password' => 'test123', 'role' => 'admin'],
     ];
 
     $userIdsByEmail = [];
